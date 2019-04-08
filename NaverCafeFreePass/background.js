@@ -1,15 +1,7 @@
 "use strict";
 
-chrome.runtime.onInstalled.addListener(function() {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    chrome.declarativeContent.onPageChanged.addRules([{
-      conditions: [new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals: 'cafe.naver.com'},
-      })],
-      actions: [new chrome.declarativeContent.ShowPageAction()]
-    }]);
-  });
-});
+if (typeof browser === "undefined")
+  var browser = chrome;
 
 function getLocation(href) {
   var l = document.createElement("a");
@@ -49,20 +41,24 @@ function isShortCafeAddress(href) {
   return /\/\d+$/.test(url.pathname);
 }
 
+function getShortCafeAddress(cafeName, articleid) {
+  return "https://cafe.naver.com/" + cafeName + "/" + articleid;
+}
+
 function createTab(details) {
   var articleid = getArticleId(details.url);
 
   if (articleid) {
-    chrome.tabs.get(details.tabId, function(tab) {
+    browser.tabs.get(details.tabId, function(tab) {
       var cafeName = getCafeName(tab.url);
       var originalTabId = tab.id;
 
       if (cafeName)
-        chrome.tabs.create({url: "https://cafe.naver.com/"
-          + cafeName + "/" + articleid}, function(tab) {
-          chrome.tabs.executeScript(originalTabId,
-            {code: "window.history.back()"});
-        });
+        browser.tabs.create({url: getShortCafeAddress(cafeName, articleid)},
+          function(tab) {
+            browser.tabs.executeScript(originalTabId,
+              {code: "window.history.back()"});
+          });
     });
 
     return {cancel: true};
@@ -78,8 +74,8 @@ function updateTab(details) {
     var cafeName = getCafeName(details.url);
 
     if (cafeName) {
-      chrome.tabs.update(details.tabId, {url: "https://cafe.naver.com/"
-        + cafeName + "/" + articleid});
+      browser.tabs.update(details.tabId,
+        {url: getShortCafeAddress(cafeName, articleid)});
 
       return {cancel: true};
     }
@@ -88,49 +84,66 @@ function updateTab(details) {
   return {cancel: false};
 }
 
-chrome.webRequest.onBeforeRequest.addListener(createTab,
+function onBeforeRequestListenerCC(details) {
+  var url = getLocation(details.url);
+
+  if (/a=cfa\.atitle/i.test(url.search))
+    return createTab(details);
+
+  return {cancel: false};
+}
+
+function onBeforeRequestListenerCafe(details) {
+  var url = getLocation(details.url);
+
+  if (/iframe/i.test(url.search))
+    return updateTab(details);
+  else if (/ArticleRead\.nhn/i.test(url.pathname)
+    && !/where=search/i.test(url.search)
+    && !/tc=naver_search/i.test(url.search)
+    && details.frameId)
+    return createTab(details);
+
+  return {cancel: false};
+}
+
+function onBeforeSendHeadersListenerCafe(details) {
+  if (isShortCafeAddress(details.url)) {
+    var naverSearchReferer = "https://search.naver.com/";
+    var i;
+
+    for (i = 0; i < details.requestHeaders.length; i++)
+      if (details.requestHeaders[i].name.toLowerCase() === "referer") {
+        details.requestHeaders[i].value = naverSearchReferer;
+        break;
+      }
+
+    if (i >= details.requestHeaders.length)
+      details.requestHeaders.push(
+        {name: "Referer", value: naverSearchReferer});
+  }
+
+  return {requestHeaders: details.requestHeaders};
+}
+
+browser.webRequest.onBeforeRequest.addListener(
+  onBeforeRequestListenerCC,
   {urls: ["*://cc.naver.com/*articleid*"]},
   ["blocking"]);
 
-chrome.webRequest.onBeforeRequest.addListener(
-  function(details) {
-    var url = getLocation(details.url);
-
-    if (/iframe/i.test(url.search))
-      return updateTab(details);
-    else if (/ArticleRead.nhn/i.test(url.pathname)
-      && !/where=search/i.test(url.search)
-      && !/tc=naver_search/i.test(url.search)
-      && !/referrer/i.test(url.search)
-      && details.frameId)
-      return createTab(details);
-
-    return {cancel: false};
-  },
+browser.webRequest.onBeforeRequest.addListener(
+  onBeforeRequestListenerCafe,
   {urls: ["*://cafe.naver.com/*articleid*"]},
   ["blocking"]);
 
-chrome.webRequest.onBeforeSendHeaders.addListener(
-  function(details) {
-    var i;
-
-    if (isShortCafeAddress(details.url)) {
-      for (i = 0; i < details.requestHeaders.length; i++)
-        if (details.requestHeaders[i].name === "Referer") {
-          details.requestHeaders[i].value = "https://search.naver.com/";
-          break;
-        }
-
-      if (i >= details.requestHeaders.length)
-        for (i = 0; i < details.requestHeaders.length; i++)
-          if (details.requestHeaders[i].name === "Accept") {
-            details.requestHeaders.splice(i + 1, 0,
-              {name: "Referer", value: "https://search.naver.com/"});
-            break;
-          }
-    }
-
-    return {requestHeaders: details.requestHeaders};
-  },
-  {urls: ["*://cafe.naver.com/*"]},
-  ["blocking", "requestHeaders", "extraHeaders"]);
+try {
+  browser.webRequest.onBeforeSendHeaders.addListener(
+    onBeforeSendHeadersListenerCafe,
+    {urls: ["*://cafe.naver.com/*"]},
+    ["blocking", "requestHeaders", "extraHeaders"]);
+} catch (e) {
+  browser.webRequest.onBeforeSendHeaders.addListener(
+    onBeforeSendHeadersListenerCafe,
+    {urls: ["*://cafe.naver.com/*"]},
+    ["blocking", "requestHeaders"]);
+}

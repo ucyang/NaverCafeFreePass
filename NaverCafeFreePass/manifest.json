@@ -2,8 +2,7 @@
   "manifest_version": 2,
   "name": "Naver Cafe Free Pass",
   "short_name": "Free Pass",
-  "version": "1.2.0",
-  "minimum_chrome_version": "39.0",
+  "version": "1.3.0",
   "description": "네이버 카페를 자유롭게 이용하실 수 있도록 도와드립니다.",
   "author": "양운천(Unchun Yang)",
   "homepage_url": "https://ucyang.com/",
@@ -13,7 +12,7 @@
     "48": "images/icon_48.png",
     "128": "images/icon_128.png"
   },
-  "page_action": {
+  "browser_action": {
     "default_popup": "popup.html",
     "default_icon": {
       "16": "images/icon_16.png",
@@ -23,7 +22,8 @@
     }
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "permissions": [
     "activeTab",
