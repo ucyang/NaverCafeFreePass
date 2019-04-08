@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body  {
+        min-width: 250px;
+        text-align: center;
+        color: white;
+        background: #00bd39;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 5vw;
+      }
+
+      h1#page-title {
+        font-size: 8vw;
+      }
+
+      hr {
+        border: 1px dashed lightgreen;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        border-bottom: 1vw solid darkgreen;
+        padding: 5vw;
+      }
+
+      td {
+        text-align: justify;
+      }
+
+      ::selection {
+        background: green;
+      }
+
+      ::-moz-selection {
+        background: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="page-title">업데이트 내역</h1>
+    <hr />
+    <div style="overflow-x: auto">
+      <table>
+        <tr>
+          <th>버전</th>
+          <th>변경 사항</th>
+        </tr>
+        <tr>
+          <td>1.2.0</td>
+          <td>
+            구글 크롬 브라우저 최신 버전(72 이상)에서
+            새 탭이 무한히 생성되는 문제 해결.
+          </td>
+        </tr>
+        <tr>
+          <td>1.1.0</td>
+          <td>
+            카페 내 특정 게시글이 새 탭에서 열리지 않고 현재 탭에서 열리며
+            접근이 차단되는 문제 해결.
+          </td>
+        </tr>
+        <tr>
+          <td>1.0.0</td>
+          <td>
+            초기 버전.
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

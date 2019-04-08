@@ -22,7 +22,7 @@ function getArticleId(href) {
 
   var articleidFullPattern = /articleid(=|%3D)\d+/i;
   var articleidNamePattern = /articleid(=|%3D)/i;
-  
+
   var articleid = url.search.match(articleidFullPattern);
 
   if (articleid)
@@ -80,7 +80,7 @@ function updateTab(details) {
     if (cafeName) {
       chrome.tabs.update(details.tabId, {url: "https://cafe.naver.com/"
         + cafeName + "/" + articleid});
-      
+
       return {cancel: true};
     }
   }
@@ -100,6 +100,7 @@ chrome.webRequest.onBeforeRequest.addListener(
       return updateTab(details);
     else if (/ArticleRead.nhn/i.test(url.pathname)
       && !/where=search/i.test(url.search)
+      && !/tc=naver_search/i.test(url.search)
       && !/referrer/i.test(url.search)
       && details.frameId)
       return createTab(details);
@@ -119,7 +120,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
           details.requestHeaders[i].value = "https://search.naver.com/";
           break;
         }
-  
+
       if (i >= details.requestHeaders.length)
         for (i = 0; i < details.requestHeaders.length; i++)
           if (details.requestHeaders[i].name === "Accept") {
@@ -128,8 +129,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
             break;
           }
     }
-    
+
     return {requestHeaders: details.requestHeaders};
   },
   {urls: ["*://cafe.naver.com/*"]},
-  ["blocking", "requestHeaders"]);
+  ["blocking", "requestHeaders", "extraHeaders"]);
