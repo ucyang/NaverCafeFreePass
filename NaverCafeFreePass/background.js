@@ -37,7 +37,6 @@ function getCafeName(href) {
 
 function isShortCafeAddress(href) {
   var url = getLocation(href);
-
   return /\/\d+$/.test(url.pathname);
 }
 
@@ -107,6 +106,18 @@ function onBeforeRequestListenerCafe(details) {
   return {cancel: false};
 }
 
+function onBeforeRequestListenerAPIS(details) {
+  var url = getLocation(details.url);
+
+  if (/articles\/\d+/i.test(url.pathname)
+    && /buid(=|%3D)/i.test(url.search)
+    && !/or(=|%3D)/i.test(url.search)
+    && !/query(=|%3D)/i.test(url.search))
+    return {redirectUrl: details.url + "&or=m.search.naver.com&query=t"};
+
+  return {cancel: false};
+}
+
 function onBeforeSendHeadersListenerCafe(details) {
   if (isShortCafeAddress(details.url)) {
     var naverSearchReferer = "https://search.naver.com/";
@@ -134,6 +145,11 @@ browser.webRequest.onBeforeRequest.addListener(
 browser.webRequest.onBeforeRequest.addListener(
   onBeforeRequestListenerCafe,
   {urls: ["*://cafe.naver.com/*articleid*"]},
+  ["blocking"]);
+
+browser.webRequest.onBeforeRequest.addListener(
+  onBeforeRequestListenerAPIS,
+  {urls: ["*://apis.naver.com/*articles*buid*"]},
   ["blocking"]);
 
 try {
