@@ -123,7 +123,7 @@ function onBeforeSendHeadersListenerCafe(details) {
     var naverSearchReferer = "https://search.naver.com/";
     var i;
 
-    for (i = 0; i < details.requestHeaders.length; i++)
+    for (i = 0; i < details.requestHeaders.length; ++i)
       if (details.requestHeaders[i].name.toLowerCase() === "referer") {
         details.requestHeaders[i].value = naverSearchReferer;
         break;
@@ -137,29 +137,90 @@ function onBeforeSendHeadersListenerCafe(details) {
   return {requestHeaders: details.requestHeaders};
 }
 
-browser.webRequest.onBeforeRequest.addListener(
+var listeners = [
   onBeforeRequestListenerCC,
-  {urls: ["*://cc.naver.com/*articleid*"]},
-  ["blocking"]);
-
-browser.webRequest.onBeforeRequest.addListener(
   onBeforeRequestListenerCafe,
-  {urls: ["*://cafe.naver.com/*articleid*"]},
-  ["blocking"]);
-
-browser.webRequest.onBeforeRequest.addListener(
   onBeforeRequestListenerAPIS,
-  {urls: ["*://apis.naver.com/*articles*buid*"]},
-  ["blocking"]);
+  onBeforeSendHeadersListenerCafe
+];
 
-try {
-  browser.webRequest.onBeforeSendHeaders.addListener(
-    onBeforeSendHeadersListenerCafe,
-    {urls: ["*://cafe.naver.com/*"]},
-    ["blocking", "requestHeaders", "extraHeaders"]);
-} catch (e) {
-  browser.webRequest.onBeforeSendHeaders.addListener(
-    onBeforeSendHeadersListenerCafe,
-    {urls: ["*://cafe.naver.com/*"]},
-    ["blocking", "requestHeaders"]);
+var urls = [
+  "*://cc.naver.com/*articleid*",
+  "*://cafe.naver.com/*articleid*",
+  "*://apis.naver.com/*articles*buid*",
+  "*://cafe.naver.com/*"
+];
+
+function addListeners() {
+  var i;
+
+  for (i = 0; i < listeners.length - 1; ++i)
+    if (!browser.webRequest.onBeforeRequest.hasListener(listeners[i]))
+      browser.webRequest.onBeforeRequest.addListener(
+        listeners[i],
+        {urls: [urls[i]]},
+        ["blocking"]);
+
+  if (!browser.webRequest.onBeforeSendHeaders.hasListener(listeners[i]))
+    try {
+      browser.webRequest.onBeforeSendHeaders.addListener(
+        listeners[i],
+        {urls: [urls[i]]},
+        ["blocking", "requestHeaders", "extraHeaders"]);
+    } catch (e) {
+      browser.webRequest.onBeforeSendHeaders.addListener(
+        listeners[i],
+        {urls: [urls[i]]},
+        ["blocking", "requestHeaders"]);
+    }
 }
+
+function removeListeners() {
+  var i;
+
+  for (i = 0; i < listeners.length - 1; ++i)
+    if (browser.webRequest.onBeforeRequest.hasListener(listeners[i]))
+      browser.webRequest.onBeforeRequest.removeListener(listeners[i]);
+
+  if (browser.webRequest.onBeforeSendHeaders.hasListener(listeners[i]))
+    browser.webRequest.onBeforeSendHeaders.removeListener(listeners[i]);
+}
+
+browser.runtime.onInstalled.addListener(function(details) {
+  switch (details.reason) {
+    case "install":
+      browser.storage.sync.set({enabled: true});
+      break;
+    case "update":
+      break;
+  }
+});
+
+function setIcon(enable) {
+  var prefix = enable ? "images/icon_" : "images/icon_disabled_";
+  
+  browser.browserAction.setIcon({path: {
+    16: prefix + "16.png",
+    32: prefix + "32.png",
+    48: prefix + "48.png",
+    128: prefix + "128.png"
+  }});
+}
+
+browser.storage.sync.get("enabled", function(items) {
+  if (items.enabled || typeof items.enabled === "undefined")
+    addListeners();
+  else
+    setIcon(false);
+});
+
+browser.storage.onChanged.addListener(function(changes) {
+  if ("enabled" in changes && typeof changes.enabled.oldValue !== "undefined")
+    if (changes.enabled.newValue) {
+      setIcon(true);
+      addListeners();
+    } else {
+      setIcon(false);
+      removeListeners();
+    }
+});

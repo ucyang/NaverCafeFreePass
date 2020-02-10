@@ -2,26 +2,23 @@
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body  {
-        min-width: 250px;
+        min-width: 300px;
         text-align: center;
         color: white;
         background: #00bd39;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 5vw;
+        font-size: 4vw;
       }
 
       h1#extension-name {
-        font-size: 8vw;
+        font-size: 6vw;
       }
 
       h2#extension-version {
-        font-size: 6vw;
-      }
-
-      h2#header-description {
-        font-size: 6vw;
+        font-size: 5vw;
       }
 
       hr {
@@ -37,11 +34,66 @@
         text-decoration: none;
       }
 
-      ::selection {
-        background: green;
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 14vw;
+        height: 8vw;
+      }
+
+      .switch input { 
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        width: 6vw;
+        height: 6vw;
+        left: 1vw;
+        bottom: 1vw;
+        background-color: white;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+
+      input:checked + .slider {
+        background-color: lightgreen;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(6vw);
+        -ms-transform: translateX(6vw);
+        transform: translateX(6vw);
+      }
+
+      .slider.round {
+        border-radius: 10vw;
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
       }
 
       ::-moz-selection {
+        background: green;
+      }
+
+      ::selection {
         background: green;
       }
     </style>
@@ -49,12 +101,18 @@
   <body>
     <div>
       <h1 id="extension-name">Naver Cafe Free Pass</h1>
-      <h2 id="extension-version">Version 1.3.0</h2>
+      <label class="switch">
+        <input id="enabled" type="checkbox" />
+        <span class="slider round"></span>
+      </label>
+    </div>
+    <hr />
+    <div>
+      <h2 id="extension-version">Version 1.4.0</h2>
       <a id="update-history-link" href="update_history.html">업데이트 내역</a>
     </div>
     <hr />
     <div>
-      <h2 id="header-description">간단 설명</h2>
       <p id="info-usage">
         &nbsp;네이버 카페에는
         <strong>비회원도 네이버 검색을 통해 볼 수 있는 글</strong>이
@@ -83,5 +141,7 @@
         메일: <a href="mailto:ucyang@ucyang.com">ucyang@ucyang.com</a>
       </p>
     </div>
+
+    <script src="popup.js"></script>
   </body>
 </html>

@@ -2,8 +2,8 @@
   "manifest_version": 2,
   "name": "Naver Cafe Free Pass",
   "short_name": "Free Pass",
-  "version": "1.3.0",
-  "description": "네이버 카페를 자유롭게 이용하실 수 있도록 도와드립니다.",
+  "version": "1.4.0",
+  "description": "네이버 카페 게시글 읽기 차단을 우회합니다.",
   "author": "양운천(Unchun Yang)",
   "homepage_url": "https://ucyang.com/",
   "icons": {
@@ -30,6 +30,7 @@
     "declarativeContent",
     "webRequest",
     "webRequestBlocking",
+    "storage",
     "*://*.naver.com/*"
   ]
 }
