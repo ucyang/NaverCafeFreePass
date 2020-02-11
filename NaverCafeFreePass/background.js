@@ -192,6 +192,8 @@ browser.runtime.onInstalled.addListener(function(details) {
       browser.storage.sync.set({enabled: true});
       break;
     case "update":
+      browser.browserAction.setBadgeText({text: "New!"});
+      browser.browserAction.setBadgeBackgroundColor({color: "#cc0"});
       break;
   }
 });
