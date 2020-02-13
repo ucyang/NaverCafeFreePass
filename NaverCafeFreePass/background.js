@@ -188,7 +188,7 @@ function removeListeners() {
 
 function setIcon(enable) {
   var prefix = enable ? "images/icon_" : "images/icon_disabled_";
-  
+
   browser.browserAction.setIcon({path: {
     16: prefix + "16.png",
     32: prefix + "32.png",
