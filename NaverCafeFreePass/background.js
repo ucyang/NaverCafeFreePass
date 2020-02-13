@@ -186,18 +186,6 @@ function removeListeners() {
     browser.webRequest.onBeforeSendHeaders.removeListener(listeners[i]);
 }
 
-browser.runtime.onInstalled.addListener(function(details) {
-  switch (details.reason) {
-    case "install":
-      browser.storage.sync.set({enabled: true});
-      break;
-    case "update":
-      browser.browserAction.setBadgeText({text: "New!"});
-      browser.browserAction.setBadgeBackgroundColor({color: "#cc0"});
-      break;
-  }
-});
-
 function setIcon(enable) {
   var prefix = enable ? "images/icon_" : "images/icon_disabled_";
   
@@ -208,6 +196,22 @@ function setIcon(enable) {
     128: prefix + "128.png"
   }});
 }
+
+browser.runtime.onInstalled.addListener(function(details) {
+  switch (details.reason) {
+    case "install":
+      browser.storage.sync.set({enabled: true});
+      break;
+    case "update":
+      browser.browserAction.setBadgeText({text: "New!"});
+      browser.browserAction.setBadgeBackgroundColor({color: "#cc0"});
+      browser.storage.sync.get("enabled", function(items) {
+        if (typeof items.enabled === "undefined")
+          browser.storage.sync.set({enabled: true});
+      });
+      break;
+  }
+});
 
 browser.storage.sync.get("enabled", function(items) {
   if (items.enabled || typeof items.enabled === "undefined")
