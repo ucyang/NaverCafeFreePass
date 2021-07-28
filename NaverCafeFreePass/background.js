@@ -118,6 +118,56 @@ function onBeforeRequestListenerAPIS(details) {
   return {cancel: false};
 }
 
+function onBeforeRequestListenerDaum(details) {
+  var url = getLocation(details.url);
+
+  if (isShortCafeAddress(details.url) && !/q(=|%3D)/i.test(url.search))
+    return {redirectUrl: details.url + (url.search ? "&" : "?") + "q=t"};
+
+  if (/bbs_read/i.test(url.pathname)
+    && /page(=|%3D)/i.test(url.search)) {
+    var fldidFullPattern = /fldid(=|%3D)[^&]+/i;
+    var fldidNamePattern = /fldid(=|%3D)/i;
+    var fldid = url.search.match(fldidFullPattern);
+
+    if (fldid) {
+      fldid = fldid[0].replace(fldidNamePattern, "");
+
+      var datanumFullPattern = /datanum(=|%3D)\d+/i;
+      var datanumNamePattern = /datanum(=|%3D)/i;
+      var datanum = url.search.match(datanumFullPattern);
+
+      if (datanum) {
+        datanum = datanum[0].replace(datanumNamePattern, "");
+
+        browser.tabs.get(details.tabId, function(tab) {
+          var cafeName = getCafeName(tab.url);
+          var originalTabId = tab.id;
+
+          if (cafeName === "undefined")
+            browser.tabs.remove(tab.id, function() {
+              alert("죄송하지만 Naver Cafe Free Pass 확장 프로그램이 지원하지 않는 접속 방법입니다. "
+                + "새 탭에서 열기 등의 방식은 지원되지 않으므로 다른 방법으로 다시 접속하시거나 "
+                + "일시적으로 확장 프로그램을 끄고 접속해주세요. "
+                + "불편이 계속되실 경우 개발자에게 문의를 남겨주시면 성실히 답변드리겠습니다.");
+            });
+          else if (cafeName)
+            browser.tabs.create({url: "https://cafe.daum.net/" + cafeName
+              + "/" + fldid + "/" + datanum + "?q=t"},
+              function(tab) {
+                browser.tabs.executeScript(originalTabId,
+                  {code: "window.history.back()"});
+              });
+        });
+
+        return {cancel: true};
+      }
+    }
+  }
+
+  return {cancel: false};
+}
+
 function onBeforeSendHeadersListenerCafe(details) {
   if (isShortCafeAddress(details.url)) {
     var naverSearchReferer = "https://search.naver.com/";
@@ -141,6 +191,7 @@ var listeners = [
   onBeforeRequestListenerCC,
   onBeforeRequestListenerCafe,
   onBeforeRequestListenerAPIS,
+  onBeforeRequestListenerDaum,
   onBeforeSendHeadersListenerCafe
 ];
 
@@ -148,6 +199,7 @@ var urls = [
   "*://cc.naver.com/*articleid*",
   "*://cafe.naver.com/*articleid*",
   "*://apis.naver.com/*articles*buid*",
+  "*://cafe.daum.net/*",
   "*://cafe.naver.com/*"
 ];
 
