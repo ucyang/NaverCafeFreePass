@@ -7,7 +7,7 @@ function getLocation(href) {
   var l = document.createElement("a");
   l.href = href;
   return l;
-};
+}
 
 function getArticleId(href) {
   var url = getLocation(href);
