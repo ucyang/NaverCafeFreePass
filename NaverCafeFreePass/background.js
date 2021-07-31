@@ -40,8 +40,12 @@ function isShortCafeAddress(href) {
   return /\/\d+$/.test(url.pathname);
 }
 
-function getShortCafeAddress(cafeName, articleid) {
-  return "https://cafe.naver.com/" + cafeName + "/" + articleid;
+function isStaffAddress(href) {
+  return /StaffArticleRead\.nhn/i.test(href);
+}
+
+function getShortCafeAddress(cafeName, articleid, staffOnly) {
+  return "https://cafe.naver.com/" + cafeName + (staffOnly ? "/staff" : "") + "/" + articleid;
 }
 
 function createTab(details) {
@@ -52,12 +56,15 @@ function createTab(details) {
       var cafeName = getCafeName(tab.url);
       var originalTabId = tab.id;
 
-      if (cafeName)
-        browser.tabs.create({url: getShortCafeAddress(cafeName, articleid)},
+      if (cafeName) {
+        var staffOnly = isStaffAddress(details.url);
+
+        browser.tabs.create({url: getShortCafeAddress(cafeName, articleid, staffOnly)},
           function(tab) {
             browser.tabs.executeScript(originalTabId,
               {code: "window.history.back()"});
           });
+      }
     });
 
     return {cancel: true};
@@ -73,8 +80,10 @@ function updateTab(details) {
     var cafeName = getCafeName(details.url);
 
     if (cafeName) {
+      var staffOnly = isStaffAddress(details.url);
+
       browser.tabs.update(details.tabId,
-        {url: getShortCafeAddress(cafeName, articleid)});
+        {url: getShortCafeAddress(cafeName, articleid, staffOnly)});
 
       return {cancel: true};
     }
