@@ -71,7 +71,10 @@ function createTab(details) {
           + "게시글 링크를 우클릭 후 새 탭에서 열어보시거나 "
           + "일시적으로 확장 프로그램을 끄고 접속해주시기 바랍니다. "
           + "불편이 계속되실 경우 개발자에게 문의를 남겨주시면 성실히 답변드리겠습니다.");
-        browser.tabs.executeScript(originalTabId, {code: "window.history.back()"});
+        browser.tabs.executeScript(originalTabId, {code: "window.history.back()"},
+          function(result) {
+            browser.runtime.lastError;
+          });
       }
     });
 
