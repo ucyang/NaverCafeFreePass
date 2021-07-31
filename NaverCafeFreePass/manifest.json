@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Naver Cafe Free Pass",
   "short_name": "Free Pass",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "네이버/다음 카페의 게시글 읽기 차단을 우회합니다.",
   "author": "양운천(Unchun Yang)",
   "homepage_url": "https://ucyang.com/",
