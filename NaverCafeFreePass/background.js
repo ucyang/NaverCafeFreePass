@@ -56,7 +56,7 @@ function createTab(details) {
       var cafeName = getCafeName(tab.url);
       var originalTabId = tab.id;
 
-      if (cafeName) {
+      if (cafeName && cafeName !== "undefined") {
         var staffOnly = isStaffAddress(details.url);
 
         browser.tabs.create({url: getShortCafeAddress(cafeName, articleid, staffOnly)},
@@ -64,6 +64,14 @@ function createTab(details) {
             browser.tabs.executeScript(originalTabId,
               {code: "window.history.back()"});
           });
+      } else {
+        alert("Naver Cafe Free Pass 확장 프로그램이 게시글 주소를 인식하지 못했습니다. "
+          + "이는 일반적인 카페 주소와 다른 형식의 주소(자체 도메인을 사용하는 경우 등)를 "
+          + "사용하는 카페에서 발생할 수 있는 문제입니다. "
+          + "게시글 링크를 우클릭 후 새 탭에서 열어보시거나 "
+          + "일시적으로 확장 프로그램을 끄고 접속해주시기 바랍니다. "
+          + "불편이 계속되실 경우 개발자에게 문의를 남겨주시면 성실히 답변드리겠습니다.");
+        browser.tabs.executeScript(originalTabId, {code: "window.history.back()"});
       }
     });
 
