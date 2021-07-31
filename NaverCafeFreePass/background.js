@@ -61,8 +61,7 @@ function createTab(details) {
 
         browser.tabs.create({url: getShortCafeAddress(cafeName, articleid, staffOnly)},
           function(tab) {
-            browser.tabs.executeScript(originalTabId,
-              {code: "window.history.back()"});
+            browser.tabs.executeScript(originalTabId, {code: "window.history.back()"});
           });
       } else {
         alert("Naver Cafe Free Pass 확장 프로그램이 게시글 주소를 인식하지 못했습니다. "
@@ -161,20 +160,19 @@ function onBeforeRequestListenerDaum(details) {
           var cafeName = getCafeName(tab.url);
           var originalTabId = tab.id;
 
-          if (cafeName === "undefined")
+          if (cafeName && cafeName !== "undefined")
+            browser.tabs.create({url: "https://cafe.daum.net/" + cafeName
+              + "/" + fldid + "/" + datanum + "?q=t"},
+              function(tab) {
+                browser.tabs.executeScript(originalTabId, {code: "window.history.back()"});
+              });
+          else
             browser.tabs.remove(tab.id, function() {
               alert("죄송하지만 Naver Cafe Free Pass 확장 프로그램이 지원하지 않는 접속 방법입니다. "
                 + "새 탭에서 열기 등의 방식은 지원되지 않으므로 다른 방법으로 다시 접속하시거나 "
                 + "일시적으로 확장 프로그램을 끄고 접속해주세요. "
                 + "불편이 계속되실 경우 개발자에게 문의를 남겨주시면 성실히 답변드리겠습니다.");
             });
-          else if (cafeName)
-            browser.tabs.create({url: "https://cafe.daum.net/" + cafeName
-              + "/" + fldid + "/" + datanum + "?q=t"},
-              function(tab) {
-                browser.tabs.executeScript(originalTabId,
-                  {code: "window.history.back()"});
-              });
         });
 
         return {cancel: true};
@@ -197,8 +195,7 @@ function onBeforeSendHeadersListenerCafe(details) {
       }
 
     if (i >= details.requestHeaders.length)
-      details.requestHeaders.push(
-        {name: "Referer", value: naverSearchReferer});
+      details.requestHeaders.push({name: "Referer", value: naverSearchReferer});
   }
 
   return {requestHeaders: details.requestHeaders};
