@@ -59,7 +59,8 @@ function createTab(details) {
       if (cafeName && cafeName !== "undefined") {
         var staffOnly = isStaffAddress(details.url);
 
-        browser.tabs.create({url: getShortCafeAddress(cafeName, articleid, staffOnly)},
+        browser.tabs.create({url: getShortCafeAddress(cafeName, articleid, staffOnly),
+          index: tab.index + 1},
           function(tab) {
             browser.tabs.executeScript(originalTabId, {code: "window.history.back()"});
           });
