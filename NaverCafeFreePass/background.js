@@ -166,7 +166,7 @@ function onBeforeRequestListenerDaum(details) {
 
           if (cafeName && cafeName !== "undefined")
             browser.tabs.create({url: "https://cafe.daum.net/" + cafeName
-              + "/" + fldid + "/" + datanum + "?q=t"},
+              + "/" + fldid + "/" + datanum + "?q=t", index: tab.index + 1},
               function(tab) {
                 browser.tabs.executeScript(originalTabId, {code: "window.history.back()"});
               });
