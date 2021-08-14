@@ -277,20 +277,29 @@ function setIcon(enable) {
 browser.runtime.onInstalled.addListener(function(details) {
   switch (details.reason) {
     case "install":
-      browser.storage.sync.set({enabled: true});
+      browser.storage.local.set({enabled: true});
       break;
     case "update":
       browser.browserAction.setBadgeText({text: "New!"});
       browser.browserAction.setBadgeBackgroundColor({color: "#cc0"});
-      browser.storage.sync.get("enabled", function(items) {
+
+      browser.storage.local.get("enabled", function(items) {
         if (typeof items.enabled === "undefined")
-          browser.storage.sync.set({enabled: true});
+          if (isFirefox)
+              browser.storage.local.set({enabled: true});
+          else
+            browser.storage.sync.get("enabled", function(items) {
+              if (typeof items.enabled === "undefined")
+                browser.storage.local.set({enabled: true});
+              else
+                browser.storage.local.set({enabled: items.enabled});
+            });
       });
       break;
   }
 });
 
-browser.storage.sync.get("enabled", function(items) {
+browser.storage.local.get("enabled", function(items) {
   if (items.enabled || typeof items.enabled === "undefined")
     addListeners();
   else

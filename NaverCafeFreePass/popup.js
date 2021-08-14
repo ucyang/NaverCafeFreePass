@@ -5,12 +5,12 @@ if (typeof browser === "undefined")
 
 var inputEnabled = document.getElementById("enabled");
 
-browser.storage.sync.get("enabled", function(items) {
+browser.storage.local.get("enabled", function(items) {
   inputEnabled.checked = items.enabled;
 });
 
 inputEnabled.onclick = function (event) {
-  browser.storage.sync.set({enabled: event.target.checked});
+  browser.storage.local.set({enabled: event.target.checked});
 };
 
 browser.browserAction.getBadgeText({}, function(result) {
