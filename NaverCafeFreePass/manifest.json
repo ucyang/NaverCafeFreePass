@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
   "name": "Naver Cafe Free Pass",
-  "short_name": "Free Pass",
-  "version": "1.5.1",
+  "short_name": "Naver Pass",
+  "version": "1.6.0",
   "description": "네이버/다음 카페의 게시글 읽기 차단을 우회합니다.",
-  "author": "양운천(Unchun Yang)",
+  "author": "Unchun Yang",
   "homepage_url": "https://ucyang.com/",
   "icons": {
     "16": "images/icon_16.png",
@@ -30,6 +30,7 @@
     "webRequest",
     "webRequestBlocking",
     "storage",
+    "notifications",
     "*://*.naver.com/*",
     "*://*.daum.net/*"
   ]
