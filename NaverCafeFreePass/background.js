@@ -153,7 +153,7 @@ function onBeforeRequestListenerDaum(details) {
   var url = getLocation(details.url);
 
   if (isShortCafeAddress(details.url) && !/q(=|%3D)/i.test(url.search))
-    return {redirectUrl: details.url + (url.search ? "&" : "?") + "q=t"};
+    return {redirectUrl: details.url + (url.search ? "&" : "?&") + "q=t"};
 
   if (/bbs_read/i.test(url.pathname)
     && /page(=|%3D)/i.test(url.search)) {
@@ -233,7 +233,7 @@ var urls = [
   "*://cc.naver.com/*articleid*",
   "*://cafe.naver.com/*articleid*",
   "*://apis.naver.com/*articles*buid*",
-  "*://cafe.daum.net/*",
+  "*://*.cafe.daum.net/*",
   "*://cafe.naver.com/*"
 ];
 
