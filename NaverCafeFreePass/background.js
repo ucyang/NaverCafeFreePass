@@ -156,7 +156,7 @@ function onBeforeRequestListenerDaum(details) {
     return {redirectUrl: details.url + (url.search ? "&" : "?&") + "q=t"};
 
   if (/bbs_read/i.test(url.pathname)
-    && /page(=|%3D)/i.test(url.search)) {
+    && (/page(=|%3D)/i.test(url.search) || /regdt(=|%3D)/i.test(url.search))) {
     var fldidFullPattern = /fldid(=|%3D)[^&]+/i;
     var fldidNamePattern = /fldid(=|%3D)/i;
     var fldid = url.search.match(fldidFullPattern);
