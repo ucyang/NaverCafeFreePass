@@ -221,55 +221,63 @@ function onBeforeSendHeadersListenerCafe(details) {
   return {requestHeaders: details.requestHeaders};
 }
 
-var listeners = [
+var onBeforeRequestListeners = [
   onBeforeRequestListenerCC,
   onBeforeRequestListenerCafe,
   onBeforeRequestListenerAPIS,
-  onBeforeRequestListenerDaum,
-  onBeforeSendHeadersListenerCafe
+  onBeforeRequestListenerDaum
 ];
 
-var urls = [
+var onBeforeRequestUrls = [
   "*://cc.naver.com/*articleid*",
   "*://cafe.naver.com/*articleid*",
   "*://apis.naver.com/*articles*buid*",
-  "*://*.cafe.daum.net/*",
+  "*://*.cafe.daum.net/*"
+];
+
+var onBeforeSendHeadersListeners = [
+  onBeforeSendHeadersListenerCafe
+];
+
+var onBeforeSendHeadersUrls = [
   "*://cafe.naver.com/*"
 ];
 
 function addListeners() {
   var i;
 
-  for (i = 0; i < listeners.length - 1; ++i)
-    if (!browser.webRequest.onBeforeRequest.hasListener(listeners[i]))
+  for (i = 0; i < onBeforeRequestListeners.length; ++i)
+    if (!browser.webRequest.onBeforeRequest.hasListener(onBeforeRequestListeners[i]))
       browser.webRequest.onBeforeRequest.addListener(
-        listeners[i],
-        {urls: [urls[i]]},
+        onBeforeRequestListeners[i],
+        {urls: [onBeforeRequestUrls[i]]},
         ["blocking"]);
 
-  if (!browser.webRequest.onBeforeSendHeaders.hasListener(listeners[i]))
-    try {
-      browser.webRequest.onBeforeSendHeaders.addListener(
-        listeners[i],
-        {urls: [urls[i]]},
-        ["blocking", "requestHeaders", "extraHeaders"]);
-    } catch (e) {
-      browser.webRequest.onBeforeSendHeaders.addListener(
-        listeners[i],
-        {urls: [urls[i]]},
-        ["blocking", "requestHeaders"]);
-    }
+  for (i = 0; i < onBeforeSendHeadersListeners.length; ++i)
+    if (!browser.webRequest.onBeforeSendHeaders.hasListener(onBeforeSendHeadersListeners[i]))
+      try {
+        browser.webRequest.onBeforeSendHeaders.addListener(
+          onBeforeSendHeadersListeners[i],
+          {urls: [onBeforeSendHeadersUrls[i]]},
+          ["blocking", "requestHeaders", "extraHeaders"]);
+      } catch (e) {
+        browser.webRequest.onBeforeSendHeaders.addListener(
+          onBeforeSendHeadersListeners[i],
+          {urls: [onBeforeSendHeadersUrls[i]]},
+          ["blocking", "requestHeaders"]);
+      }
 }
 
 function removeListeners() {
   var i;
 
-  for (i = 0; i < listeners.length - 1; ++i)
-    if (browser.webRequest.onBeforeRequest.hasListener(listeners[i]))
-      browser.webRequest.onBeforeRequest.removeListener(listeners[i]);
+  for (i = 0; i < onBeforeRequestListeners.length; ++i)
+    if (browser.webRequest.onBeforeRequest.hasListener(onBeforeRequestListeners[i]))
+      browser.webRequest.onBeforeRequest.removeListener(onBeforeRequestListeners[i]);
 
-  if (browser.webRequest.onBeforeSendHeaders.hasListener(listeners[i]))
-    browser.webRequest.onBeforeSendHeaders.removeListener(listeners[i]);
+  for (i = 0; i < onBeforeSendHeadersListeners.length; ++i)
+    if (browser.webRequest.onBeforeSendHeaders.hasListener(onBeforeSendHeadersListeners[i]))
+      browser.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersListeners[i]);
 }
 
 function setIcon(enable) {
