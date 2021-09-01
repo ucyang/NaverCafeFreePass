@@ -5,13 +5,15 @@
 ## 다운로드
 
 - [크롬 웹 스토어](https://chrome.google.com/webstore/detail/naver-cafe-free-pass/jojlddfolpiejckahpinefdikdogenjg?hl=ko)
-- 파이어폭스 애드온: 준비 중
+- 파이어폭스 애드온: 검수 중
 
 ## 지원 브라우저
 
-- 지원
-  - 구글 크롬, MS 엣지, 네이버 웨일 등 크로미움 기반 브라우저
+- 공식 지원
+  - 구글 크롬, MS 엣지, 네이버 웨일 및 기타 크로미움 기반 브라우저
   - 모질라 파이어폭스
+- 비공식 지원
+  - 기타 WebExtensions API 지원 브라우저
 - 준비 중
   - 각종 모바일 브라우저
 
