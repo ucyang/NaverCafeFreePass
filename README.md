@@ -5,7 +5,7 @@
 ## 다운로드
 
 - [크롬 웹 스토어](https://chrome.google.com/webstore/detail/naver-cafe-free-pass/jojlddfolpiejckahpinefdikdogenjg?hl=ko)
-- 파이어폭스 애드온: 검수 중
+- [파이어폭스 애드온](https://addons.mozilla.org/ko/firefox/addon/naver-cafe-free-pass/)
 
 ## 지원 브라우저
 
