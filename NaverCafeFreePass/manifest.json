@@ -33,5 +33,13 @@
     "notifications",
     "*://*.naver.com/*",
     "*://*.daum.net/*"
-  ]
+  ],
+  "commands": {
+    "toggle_freepass": {
+        "suggested_key": {
+            "default": "Ctrl+Shift+S"
+        },
+        "description": "Free Pass On/Off toggle"
+    }
+  }
 }
