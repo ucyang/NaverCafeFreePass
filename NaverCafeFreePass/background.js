@@ -333,3 +333,13 @@ browser.storage.onChanged.addListener(function(changes) {
       removeListeners();
     }
 });
+
+browser.commands.onCommand.addListener(function(command) {
+  browser.storage.local.get("enabled", function(items) {
+    if (items.enabled) {
+      browser.storage.local.set({enabled: false});
+    } else {
+      browser.storage.local.set({enabled: true});
+    }
+  });
+});
